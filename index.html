@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="ペアコードでつながる、ファイル共有とグループチャット">
+    <meta name="theme-color" content="#794be8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="OurDrop">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>OurDrop</title>
+    <link rel="manifest" href="manifest.webmanifest?v=0.8.97">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="styles.css?v=0.8.97">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <img src="assets/logo-mark.png" width="848" height="743" alt="" decoding="async">
+          </div>
+          <div>
+            <strong>OurDrop</strong>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <div class="top-code">
+            <span>Pair code</span>
+            <div class="code-pill">
+              <strong id="roomCode">4827</strong>
+              <span class="copy-icon" aria-hidden="true"></span>
+              <button class="inline-icon-button" id="regeneratePairCode" type="button" aria-label="Regenerate pair code" title="Regenerate pair code">↻</button>
+            </div>
+          </div>
+          <span class="top-divider"></span>
+          <div class="top-members"><span class="asset-icon group-asset-icon" aria-hidden="true"></span><strong id="topMemberCount">4</strong></div>
+          <span class="top-divider"></span>
+          <button class="notification-button inline-icon-button" id="enableNotifications" type="button" hidden aria-label="Enable notifications" title="Enable notifications"><span class="notification-icon" aria-hidden="true"></span></button>
+          <button class="host-status" id="hostButton" type="button">
+            <span class="dot dot-online"></span>
+            <span>
+              <strong id="hostStatus">…</strong>
+              <small id="selfName">Host</small>
+            </span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="left-panel">
+          <section class="panel-section groups-panel">
+            <div class="section-title">
+              <span>Groups</span>
+            </div>
+            <div class="group-list" id="groupList"></div>
+            <button class="ghost-button wide add-group-button" id="addGroup" type="button">
+              <span class="add-group-content">
+                <span class="add-group-plus" aria-hidden="true">+</span>
+                <span class="add-group-label">Add Group</span>
+              </span>
+            </button>
+          </section>
+        </aside>
+
+        <section class="radar-panel" aria-label="Nearby clients">
+          <div class="radar" id="radar">
+            <div class="ring ring-one"></div>
+            <div class="ring ring-two"></div>
+            <div class="ring ring-three"></div>
+            <div class="ring ring-four"></div>
+            <div class="ring ring-five"></div>
+            <div class="ring ring-six"></div>
+            <div class="ring ring-seven"></div>
+            <div class="ring ring-eight"></div>
+            <div class="ring ring-nine"></div>
+            <div class="ring ring-ten"></div>
+            <div class="ring ring-eleven"></div>
+            <button class="pair-plus-node" id="pairByCodeNode" type="button" aria-label="Pair by code">
+              <span>+</span>
+              <small>Pair by code</small>
+            </button>
+            <button class="host-node" id="hostNode" type="button">
+              <span class="node-icon laptop tone-violet app-chrome" id="hostNodeIcon" aria-hidden="true"></span>
+              <span class="node-name-line"><strong id="hostNodeName">This Mac</strong></span>
+              <small id="hostNodeInfo"></small>
+              <em id="hostNodeLabel">Host</em>
+            </button>
+          </div>
+        </section>
+
+        <aside class="chat-panel">
+          <div class="chat-header">
+            <div>
+              <div class="chat-header-title-row">
+                <h1 id="activeRoomTitle"><span class="fit-text chat-room-name-text">No room selected</span></h1>
+                <button class="chat-rename-button rename-icon-button" id="renameChatTarget" type="button" hidden aria-label="Rename" title="Rename">
+                  <span class="edit-icon" aria-hidden="true"></span>
+                </button>
+                <button class="chat-rename-button rename-icon-button" id="editGroupChatTarget" type="button" hidden aria-label="Edit group" title="Edit group">
+                  <span class="edit-icon" aria-hidden="true"></span>
+                </button>
+              </div>
+              <span class="room-members"><span class="asset-icon group-asset-icon" aria-hidden="true"></span><span id="roomMemberLabel">Pair from radar or add a group</span></span>
+            </div>
+            <div class="chat-header-actions">
+              <button class="chat-delete-button" id="unpairChatTarget" type="button" hidden aria-label="ペア解除" title="ペア解除"></button>
+              <button class="close-chat-button" id="closeChat" type="button" aria-label="Close chat">×</button>
+            </div>
+          </div>
+
+          <div class="chat-scroll">
+            <div class="expiry-notice"><span aria-hidden="true">ⓘ</span> Messages and files expire after <strong id="expiryValue">14 days</strong>.</div>
+            <div class="day-divider"><span>Today</span></div>
+            <div class="message-log" id="messageLog" aria-live="polite"></div>
+          </div>
+
+          <form class="composer" id="composer">
+            <input class="file-input" id="fileInput" type="file" multiple>
+            <button class="icon-button attach-icon-button" id="attachButton" type="button" aria-label="Attach file"></button>
+            <textarea id="messageInput" rows="1" placeholder="Type a message..."></textarea>
+            <button class="send-button" type="submit" aria-label="Send"></button>
+          </form>
+        </aside>
+      </main>
+    </div>
+
+    <dialog class="login-dialog" id="loginDialog">
+      <form method="dialog" class="login-box" id="loginForm">
+        <div class="dialog-header">
+          <div>
+            <span class="muted">Host setup</span>
+            <h2>Connect IMAP once</h2>
+          </div>
+          <button class="dialog-close-button" id="closeLogin" value="cancel" type="submit" aria-label="Close">×</button>
+        </div>
+        <label>
+          <span>IMAP server</span>
+          <input id="imapServer" name="server" placeholder="imap.example.com" autocomplete="off">
+        </label>
+        <label>
+          <span>Email</span>
+          <input id="imapEmail" name="email" placeholder="you@example.com" autocomplete="username">
+        </label>
+        <label>
+          <span>App password</span>
+          <input id="imapPassword" name="password" type="password" placeholder="Stored locally in this prototype" autocomplete="current-password">
+        </label>
+        <label>
+          <span>PIN for this device</span>
+          <input id="imapPin" name="pin" inputmode="numeric" maxlength="6" placeholder="2468">
+        </label>
+        <button class="primary-button wide" id="saveLogin" value="default" type="submit">Save and unlock</button>
+      </form>
+    </dialog>
+
+    <dialog class="pair-dialog" id="pairDialog">
+      <form class="login-box pair-box" id="pairForm">
+        <div class="dialog-header">
+          <div>
+            <span class="muted">Pair by code</span>
+            <h2>Enter pair code</h2>
+          </div>
+          <button class="dialog-close-button" id="closePair" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="pair-dialog-error" id="pairDialogError" hidden></p>
+        <label>
+          <span>Pair code</span>
+          <input id="pairCodeInput" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="1234">
+        </label>
+        <button class="primary-button wide" id="submitPair" type="submit">Pair</button>
+      </form>
+    </dialog>
+
+    <dialog class="group-dialog" id="groupDialog">
+      <div class="group-builder">
+        <div class="dialog-header">
+          <div>
+            <span class="muted">Group settings</span>
+            <h2>Edit group</h2>
+          </div>
+          <button class="dialog-close-button" id="closeGroup" type="button" aria-label="Close">×</button>
+        </div>
+
+        <div class="builder-grid">
+          <section class="group-settings">
+            <label>
+              <span>Group name</span>
+              <input id="groupNameInput" autocomplete="off">
+            </label>
+            <label>
+              <span>Expiry</span>
+              <select id="expirySelect" name="expiry">
+                <option value="14 days">14 days</option>
+                <option value="7 days">7 days</option>
+                <option value="30 days">30 days</option>
+              </select>
+            </label>
+            <button class="primary-button wide" id="confirmGroup" type="button">Done</button>
+          </section>
+
+          <section class="member-picker-section">
+            <div class="section-title">
+              <span>Add members</span>
+              <button class="ghost-button pair-from-list-button" id="pairFromList" type="button">Pair by code</button>
+            </div>
+            <div class="builder-list" id="builderList"></div>
+            <div class="selected-count"><span id="builderCount">0</span> <span id="builderSelectedLabel">selected</span></div>
+            <div class="chip-row" id="builderChips"></div>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="rename-dialog" id="renameDialog">
+      <form class="login-box rename-box" id="renameForm">
+        <div class="dialog-header">
+          <div>
+            <span class="muted" id="renameDialogHint">Rename</span>
+            <h2 id="renameDialogTitle">Device name</h2>
+          </div>
+          <button class="dialog-close-button" id="closeRename" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="rename-dialog-error" id="renameDialogError" hidden></p>
+        <label>
+          <span id="renameInputLabel">Name</span>
+          <input id="renameInput" type="text" inputmode="text" autocomplete="off" maxlength="32">
+        </label>
+        <button class="primary-button wide" id="submitRename" type="submit">Save</button>
+      </form>
+    </dialog>
+
+    <a class="apps-badge" href="https://apps.tomippe.jp/ourdrop/" target="_blank" rel="noopener noreferrer">
+      <img src="https://tomippe.jp/img/apps-logo.svg" alt="StudioTomippe APPS" width="100" height="19">
+    </a>
+
+    <script src="app.js?v=0.8.97"></script>
+  </body>
+</html>
